@@ -16,7 +16,7 @@
 if [ -n "$2" ]; then
   NETWORK=$2;
 else
-  NETWORK=autoinit;
+  NETWORK=autotinc;
 fi
 if [ "$3" ]; then
   ADDRESS=$3;
