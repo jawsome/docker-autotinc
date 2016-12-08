@@ -1,3 +1,6 @@
+[![](https://badge.imagelayers.io/ndru/autotinc:latest.svg)](https://imagelayers.io/?images=ndru/autotinc:latest 'Get your own badge on imagelayers.io')
+
+
 > A docker container for auto-configuring a tinc daemon within the container.
 
 
