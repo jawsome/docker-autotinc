@@ -1,32 +1,64 @@
 > A docker container for auto-configuring a tinc daemon within the container.
 
+
 ## containerized tinc 
 
 
  [tinc](https://www.tinc-vpn.org) is A Virtual Private Network (VPN) daemon that uses tunnelling and encryption to create a secure private network between hosts on the Internet. This container initializes tinc with some vague reconfigurable assumptions which allow very quick interconnecting mesh VPN networks to be constructed on effectively ANY platform that supports docker. 
 
+
 ### launching
 
+
 "up and running"
-```sh
-docker run -d -v /dev/net/tun:/dev/net/tun \
-  --cap-add NET_ADMIN \ 
-  ndru/autotinc
+
+
 ```
+$ tincid=$(docker run -d -p 655:655 -v /dev/net/tun:/dev/net/tun --cap-add NET_ADMIN ndru/autotinc:initial)
+$ docker exec -it $tincid tinc -n autotinc
+```
+
 
 ### connecting after launching
 
-```sh
+
+```
 docker exec -it CONTAINERID tinc -n autotinc
 ```
 
+
 This will drop you to the tinc shell inside the autotinc network. (multiple networks can be configured from the cli)
+
 
 #### tinc shell commands
 
-```sh
-~ $ tincid=$(docker run -d -p 655:655 -v /dev/net/tun:/dev/net/tun --cap-add NET_ADMIN ndru/autotinc:initial)
-~ $ docker exec -it $tincid tinc -n autotinc
+
+```
+$ tincid=$(docker run -d -p 655:655 -v /dev/net/tun:/dev/net/tun --cap-add NET_ADMIN ndru/autotinc:initial)
+$ docker exec -it $tincid tinc -n autotinc
+tinc.autotinc>
+tinc.autotinc> network
+autotinc
+tinc.autotinc> dump nodes
+303efaca61f0 id 0afcbdb5980d at MYSELF port 655 cipher 0 digest 0 maclength 0 compression 0 options 700000c status 0850 nexthop 303efaca61f0 via 303efaca61f0 distance 0 pmtu 9018 (min 0 max 9018)
+tinc.autotinc> export
+Name = 303efaca61f0
+-----BEGIN RSA PUBLIC KEY-----
+MIIBCgKCAQEAtTiCNGv66YUgw3bNY+ow0x8fabemVjbEVeqoO0eD3FWGTlD9ASKE
+3zXtbqbBdJzi1TDbNT3fPG+xs/mA+O/vOhZRHcG3EX9CH8uqPE4ktjvnh4EcL/uf
+XLHLinAjlLYu2WwZGLWIVerU85HjjVeNLbYDW2UOdOqxmvpGJh6Oz4gsTnexl7vG
+p5UHkTF8ODTscJAF7V387/dg7YgX5guDLrQy8NPDiRTThUpgQMtdTjBZcPcYXgpf
+uhkq2mYrqNQEIMpbwZ3fHWZI5t/FeWnJ0F87NLJcb0HLvaFz/xkuuEpzXXodwTq2
+q2rF2SrOK7ACYhv99KHlPRwoyYm4lALC+QIDAQAB
+-----END RSA PUBLIC KEY-----
+Ed25519PublicKey = i7I1+8fW4Pm6W+14lGQj9EDWB35QyQDBUQG4XhRyQbD
+Address = 172.17.0.2
+```
+
+
+Help usage
+
+```
 tinc.autotinc> help
 Usage: tinc [options] command
 
@@ -81,32 +113,20 @@ Valid commands are:
   verify NODE [FILE]         Verify that a file was signed by the given NODE.
 
 Report bugs to tinc@tinc-vpn.org.
-tinc.autotinc> network  
-autotinc
-tinc.autotinc> dump nodes
-303efaca61f0 id 0afcbdb5980d at MYSELF port 655 cipher 0 digest 0 maclength 0 compression 0 options 700000c status 0850 nexthop 303efaca61f0 via 303efaca61f0 distance 0 pmtu 9018 (min 0 max 9018)
-tinc.autotinc> export
-Name = 303efaca61f0
------BEGIN RSA PUBLIC KEY-----
-MIIBCgKCAQEAtTiCNGv66YUgw3bNY+ow0x8fabemVjbEVeqoO0eD3FWGTlD9ASKE
-3zXtbqbBdJzi1TDbNT3fPG+xs/mA+O/vOhZRHcG3EX9CH8uqPE4ktjvnh4EcL/uf
-XLHLinAjlLYu2WwZGLWIVerU85HjjVeNLbYDW2UOdOqxmvpGJh6Oz4gsTnexl7vG
-p5UHkTF8ODTscJAF7V387/dg7YgX5guDLrQy8NPDiRTThUpgQMtdTjBZcPcYXgpf
-uhkq2mYrqNQEIMpbwZ3fHWZI5t/FeWnJ0F87NLJcb0HLvaFz/xkuuEpzXXodwTq2
-q2rF2SrOK7ACYhv99KHlPRwoyYm4lALC+QIDAQAB
------END RSA PUBLIC KEY-----
-Ed25519PublicKey = i7I1+8fW4Pm6W+14lGQj9EDWB35QyQDBUQG4XhRyQbD
-Address = 172.17.0.2
 ```
  
 #### exiting shell
+
 
 Use CTRL-D to exit the tinc.autotinc> shell. 
 
 
 ## issues
 
+
 Right now we randomly select an IP in the subnet range of 172.31.255.0/24 to bind to the tunnel interface (autotinc). 
 
 
 Try out the base tinc container we use [ndru/tinc](https://hub.docker.com/r/ndru/tinc/).
+
+
