@@ -16,7 +16,7 @@
 "up and running"
 
 
-```
+```console
 $ tincid=$(docker run -d -p 655:655 -v /dev/net/tun:/dev/net/tun --cap-add NET_ADMIN ndru/autotinc:initial)
 $ docker exec -it $tincid tinc -n autotinc
 ```
@@ -25,7 +25,7 @@ $ docker exec -it $tincid tinc -n autotinc
 ### connecting after launching
 
 
-```
+```console
 docker exec -it CONTAINERID tinc -n autotinc
 ```
 
@@ -36,7 +36,7 @@ This will drop you to the tinc shell inside the autotinc network. (multiple netw
 #### tinc shell commands
 
 
-```
+```console
 $ tincid=$(docker run -d -p 655:655 -v /dev/net/tun:/dev/net/tun --cap-add NET_ADMIN ndru/autotinc:initial)
 $ docker exec -it $tincid tinc -n autotinc
 tinc.autotinc>
