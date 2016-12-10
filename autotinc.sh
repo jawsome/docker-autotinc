@@ -29,7 +29,7 @@ NETWORK=autotinc
 TINCNET=172.31.255.$(( ( RANDOM % 250 )  + 1 ))
 TINCIFTYPE=tun
 TINCDIR=/etc/tinc
-TINC="/usr/local/sbin/tinc -n $NETWORK"
+TINC="/usr/sbin/tinc -n $NETWORK"
 IP=$(hostname -i)
 NAME=$(hostname -s)
 
