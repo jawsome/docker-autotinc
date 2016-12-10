@@ -25,27 +25,13 @@
 #  Living script right now. Do not use.
 #
 
-
-if [ -n "$2" ]; then
-  NETWORK=$2;
-else
-  NETWORK=autotinc;
-fi
-if [ "$3" ]; then
-  ADDRESS=$3;
-else
-  ADDRESS=$(hostname -i)
-fi
-if [ "$1" ]; then
-  SUBNET=$1
-fi
-
+NETWORK=autotinc
 TINCNET=172.31.255.$(( ( RANDOM % 250 )  + 1 ))
 TINCIFTYPE=tun
 TINCDIR=/etc/tinc
 TINC="/usr/local/sbin/tinc -n $NETWORK"
 IP=$(hostname -i)
-NAME=$(hostname)
+NAME=$(hostname -s)
 
 init () {
   echo "info: Initializing tinc for $NAME on $IP routing $SUBNET"
