@@ -71,11 +71,9 @@ case "$1" in
   "start" )                                                 
     echo "start"                                         
     if [ -n "$2" ];                                         
-      # /autotinc.sh start 10.0.0.0/24            
       then                                               
         SUBNET="$2"                                              
         if [ -n "$3" ];                           
-          # /autotinc.sh start 10.0.0.0/24 myhost.dns.net
           then                                              
             DNS="$3"                              
           else                            
@@ -107,25 +105,25 @@ case "$1" in
                   then
                     echo "autotinc: Error: no address provided."
                   else
-                    echo -n "\n! Adding $3 as an address for ${NAME}..."
+                    echo "! Adding $3 as an address for ${NAME} (this node) ..."
                     $TINC add Address $3
                 fi
                 ;;
               "node" )
-                echo -n "\n! Paste in below the contents of 'export' from the tinc.autotinc> shell of the remote host then hold CTRL and press D or perform your platform equivalent of <Ctrl>+<D>\n!\n"
+                echo -e "\n! Paste in below the contents of 'export' from the tinc.autotinc> shell of the remote host then hold CTRL and press D or perform your platform equivalent of <Ctrl>+<D>\n!\n"
                 read contents
                 echo "Input received. Importing node information to tinc."
                 echo "$contents" | $TINC import
                 ;;
               "subnet" )
-                if [ -z "$3" ];
+                if [ -n "$3" ];
                   # If no subnet provided, ask for one
                   then
-                    echo -e "\n! Please provide the subnet you wish to add in the CIDR format 10.0.0.0/24 \n!\tHere are the subnets we have currently owned by ${NAME}:\n"
+                    echo -e "! Please provide the subnet you wish to add in the CIDR format 10.0.0.0/24 \n!\tHere are the subnets we have currently owned by ${NAME}:\n"
                     $TINC get Subnet
-                    echo -n "\nYour subnet: "
+                    echo "Your subnet: "
                     read subnet
-                    echo -e "\n\n! Adding subnet $3 to $NAME..."
+                    echo -e "! Adding subnet $3 to $NAME..."
                     $TINC add Subnet $subnet
                     # TODO if clean exit give output or error
                   # Otherwise, add it to tinc
