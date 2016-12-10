@@ -125,6 +125,8 @@ case "$1" in
                     read subnet
                     echo -e "! Adding subnet $3 to $NAME..."
                     $TINC add Subnet $subnet
+                    echo -e "! --- Subnets --- !\n"
+                    $TINC get Subnet
                     # TODO if clean exit give output or error
                   # Otherwise, add it to tinc
                   else
