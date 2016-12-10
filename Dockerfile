@@ -5,4 +5,5 @@ RUN chmod +x /autotinc.sh
 
 EXPOSE 655/tcp 655/udp
 
-CMD "/autotinc.sh"
+ENTRYPOINT ["/autotinc.sh"]
+CMD ["start"]
