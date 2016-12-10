@@ -37,8 +37,11 @@ init () {
   echo "info: Initializing tinc for $NAME on $IP routing $SUBNET"
   $TINC init $NAME
   $TINC add Address $IP
-  if [ ! -n "$SUBNET" ]; then
+  if [ -n "$SUBNET" ]; then
     $TINC add Subnet $SUBNET
+  fi
+  if [ -n "$DNS" ]; then
+    $TINC add Address $DNS
   fi
   tstart
 }
@@ -47,26 +50,99 @@ checktun () {
   # Verify tun interface is present
   if [ ! -c "/dev/net/$TINCIFTYPE" ]; then
     echo "Error: /dev/net/tun does not exist."
-    exit 0
+    exit 1
   fi
 }
 
 tstart () {
   checktun
   $TINC start
+  # TODO Figure out wtf this is here for
+  # TODO Check to see if we need to update our own Address (
   ifconfig $NETWORK $TINCNET netmask 255.255.255.0
+  echo -e "\n!\n!\n! --- Exporting node information. Copy from after this line --- !\n"
   $TINC export
-  $TINC log debug
+  echo -e "\n! ---                                                       --- !\n!\n!\n\n"
+  $TINC debug 2
+  $TINC log
 }
 
-if [ "$(ls -A $TINCDIR)" ];
-  then
-    if [ -d "${TINCDIR}/${NETWORK}" ];
+case "$1" in                                                     
+  "start" )                                                 
+    echo "start"                                         
+    if [ -n "$2" ];                                         
+      # /autotinc.sh start 10.0.0.0/24            
+      then                                               
+        SUBNET="$2"                                              
+        if [ -n "$3" ];                           
+          # /autotinc.sh start 10.0.0.0/24 myhost.dns.net
+          then                                              
+            DNS="$3"                              
+          else                            
+            init                                         
+        fi                                
+      else                                
+        init                                                     
+    fi                                            
+    if [ "$(ls -A $TINCDIR)" ];                                  
+      then                                               
+        if [ -d "${TINCDIR}/${NETWORK}" ];
+          then                            
+            tstart                                          
+          else                                    
+            init                          
+        fi                                                  
+      else                                        
+        init                              
+    fi                                                          
+  ;; 
+  "add" )
+    if [ -n "$1" ];
       then
-        tstart
-      else
-        init
+        if [ -n "$2" ];
+          then
+            case "$2" in
+              "address" )
+                if [ -z "$3" ];
+                  then
+                    echo "autotinc: Error: no address provided."
+                  else
+                    echo -n "\n! Adding $3 as an address for ${NAME}..."
+                    $TINC add Address $3
+                fi
+                ;;
+              "node" )
+                echo -n "\n! Paste in below the contents of 'export' from the tinc.autotinc> shell of the remote host then hold CTRL and press D or perform your platform equivalent of <Ctrl>+<D>\n!\n"
+                read contents
+                echo "Input received. Importing node information to tinc."
+                echo "$contents" | $TINC import
+                ;;
+              "subnet" )
+                if [ -z "$3" ];
+                  # If no subnet provided, ask for one
+                  then
+                    echo -e "\n! Please provide the subnet you wish to add in the CIDR format 10.0.0.0/24 \n!\tHere are the subnets we have currently owned by ${NAME}:\n"
+                    $TINC get Subnet
+                    echo -n "\nYour subnet: "
+                    read subnet
+                    echo -e "\n\n! Adding subnet $3 to $NAME..."
+                    $TINC add Subnet $subnet
+                    # TODO if clean exit give output or error
+                  # Otherwise, add it to tinc
+                  else
+                    if [ -n "$4" ];
+                      then
+                        echo -e "\n! Adding $3 as a subnet owned by $4. Here are the subnets this node knows about:\n"
+                        $TINC dump subnets
+                        echo -e "\n! Adding to tinc..."
+                        $TINC add ${4}.Subnet $3
+                        echo -e "\n! After adding:"
+                        $TINC dump subnets
+                    fi
+                fi
+                ;;
+            esac
+        fi
     fi
-  else 
-    init
-fi
+  ;;
+esac
