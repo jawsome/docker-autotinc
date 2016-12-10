@@ -1,15 +1,28 @@
 #!/bin/sh
 #
 # autotinc - A helper for auto-configuring tinc based on docker container
-# 
-# Information we need:
-#   * Network Name - This is used to segregate networks. 
-#   * 
-#  autotinc.sh $subnet $dnsname $network
-#  autotinc.sh 10.0.0.0/24
-#  autotinc.sh 10.0.0.0/24 dynamic.dns.net 
-#  autotinc.sh 10.0.0.0/24 dynamic.dns.net docknet
 #
+# Information we need:
+#   * Subnet: A subnet which this node can route to and show "own" in the tinc network.
+#   * Address: This is an entry in the form of either IP address or FQDN that this node is reachable at.
+#       For instance, in an AWS environment,
+#
+#  Server:
+#  autotinc.sh start $SUBNET $DNS
+#  autotinc.sh start 10.0.0.0/24
+#  autotinc.sh start 10.0.0.0/24 dynamic.dns.net
+#
+#  Client:
+#  autotinc.sh
+#  autotinc.sh add address somethingsomething.ec2.aws.amazon.com
+#  autotinc.sh add subnet 10.1.0.0/24
+#    > Adds 10.1.0.0/24 as a subnet owned by this node.
+#  autotinc.sh add subnet 10.2.0.0/24 12ced7b65c42
+#    > Address 10.2.0.0/24 as a subnet owned by 12ced7b65c42
+#  autotinc.sh add node
+#    > Imports other nodes
+#
+#  Living script right now. Do not use.
 #
 
 
